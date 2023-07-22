@@ -1,2 +1,0 @@
-from tictactoe import minimax
-
