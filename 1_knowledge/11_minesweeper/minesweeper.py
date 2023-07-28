@@ -104,21 +104,36 @@ class Sentence():
     def known_mines(self):
         """
         Returns the set of all cells in self.cells known to be mines.
+
+        If the number of cells is equal to the number of mines, then all the cells contain a mine.
+        If the above doesnt apply, then we dont know for sure and we return an empty set 
         """
-        raise NotImplementedError
+        
+        if len(self.cells) == self.count:
+            return self.cells
+        else:
+            return set()
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
+        If the number of mines (self.count) is 0, then all the cells are safe and are returned as such.
+        Otherwise, the method returns an empty set.
         """
-        raise NotImplementedError
+        if self.count == 0:
+            return self.cells
+        else:
+            return set()
 
     def mark_mine(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
-        raise NotImplementedError
+        if cell in self.known_mines():
+            
+
+
 
     def mark_safe(self, cell):
         """
