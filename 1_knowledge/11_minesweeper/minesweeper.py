@@ -132,6 +132,7 @@ class Sentence():
         a cell is known to be a mine.
         """
         if cell in self.cells:
+            print("cell", cell, "is known to be a mine.")
             self.cells.remove(cell)
             self.count -= 1
 
@@ -227,14 +228,19 @@ class MinesweeperAI():
 
             # Mark safe cells or mines
             for sentence in self.knowledge:
-                for safe_cell in sentence.known_safes():
+                known_safes_copy = sentence.known_safes().copy()
+                for safe_cell in known_safes_copy:
                     if safe_cell not in self.safes:
                         self.mark_safe(safe_cell)
                         new_knowledge_gained = True
-                for mine_cell in sentence.known_mines():
+                known_mines_copy = sentence.known_mines().copy()
+                for mine_cell in known_mines_copy:
                     if mine_cell not in self.mines:
                         self.mark_mine(mine_cell)
                         new_knowledge_gained = True
+            for sentence in self.knowledge:
+                print("knowledge:", sentence)
+
             
             # Infer new sentences
             for sentence1 in self.knowledge:
@@ -258,10 +264,11 @@ class MinesweeperAI():
         """
         safe_moves = self.safes - self.moves_made
 
-        if self_moves:
-            return random.choice(list(safe_moves))
-        else:
-            return ()
+        if safe_moves:
+            print("safe_moves available:", safe_moves)
+            choice = random.choice(list(safe_moves))
+            print("MOVE (safe):", choice)
+            return choice
 
     def make_random_move(self):
         """
@@ -270,11 +277,13 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        if not self.make_safe_move():
-            board = set((i, j) for i in range(self.height) for j in range(self.width))
-            unmade_moves = board - self.mines - self.moves_made
-            if unmade_moves:
-                return random.choice(list(unmade_moves))
-            else:
-                return None
+    
+        board = set((i, j) for i in range(self.height) for j in range(self.width))
+        unmade_moves = board - self.mines - self.moves_made
+        if unmade_moves:
+            choice = random.choice(list(unmade_moves))
+            print("MOVE (random):", choice)
+            return choice
+        else:
+            return None
 
