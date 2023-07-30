@@ -132,7 +132,6 @@ class Sentence():
         a cell is known to be a mine.
         """
         if cell in self.cells:
-            print("cell", cell, "is known to be a mine.")
             self.cells.remove(cell)
             self.count -= 1
 
@@ -241,8 +240,6 @@ class MinesweeperAI():
                     if mine_cell not in self.mines:
                         self.mark_mine(mine_cell)
                         new_knowledge_gained = True
-            #for sentence in self.knowledge:
-                #print("knowledge:", sentence)
 
             
             # Infer new sentences
@@ -252,7 +249,6 @@ class MinesweeperAI():
                         inferred_sentence = Sentence(sentence2.cells - sentence1.cells, sentence2.count - sentence1.count)
                         if inferred_sentence not in self.knowledge:
                             self.knowledge.append(inferred_sentence)
-                            print(f"Inferred knowledge:", inferred_sentence)
                             new_knowledge_gained = True
 
 
@@ -269,10 +265,7 @@ class MinesweeperAI():
         safe_moves = self.safes - self.moves_made
 
         if safe_moves:
-            print("safe_moves available:", safe_moves)
-            print("known mines:", self.mines)
             choice = random.choice(list(safe_moves))
-            print("MOVE (safe):", choice)
             return choice
 
     def make_random_move(self):
@@ -287,7 +280,6 @@ class MinesweeperAI():
         unmade_moves = board - self.mines - self.moves_made
         if unmade_moves:
             choice = random.choice(list(unmade_moves))
-            print("MOVE (random):", choice)
             return choice
         else:
             return None
