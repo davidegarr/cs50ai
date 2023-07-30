@@ -214,10 +214,9 @@ class MinesweeperAI():
             for j in range(max(0, y - 1), min(y + 2, self.height)):
                 if (i, j) != (x, y):
                     neighbors.append((i, j))
-        
-        unknown_neighbors = [cell for cell in neighbors if cell not in self.safes and cell not in self.mines]
-        if unknown_neighbors:
-            new_sentence = Sentence(set(unknown_neighbors), count)
+
+        if neighbors:
+            new_sentence = Sentence(set(neighbors), count)
             self.knowledge.append(new_sentence)
         
         #4)mark any additional cells as safe or mines if possible
