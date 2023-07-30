@@ -210,13 +210,17 @@ class MinesweeperAI():
         #3) add a new sentence to the AI's knowledge base
         x, y = cell
         neighbors = []
+        known_mines_count = 0
         for i in range(max(0, x - 1), min(x + 2, self.width)):
             for j in range(max(0, y - 1), min(y + 2, self.height)):
                 if (i, j) != (x, y):
-                    neighbors.append((i, j))
+                    if (i, j) in self.mines:
+                        known_mines_count += 1
+                    elif (i, j) not in self.safes:
+                        neighbors.append((i, j))
 
         if neighbors:
-            new_sentence = Sentence(set(neighbors), count)
+            new_sentence = Sentence(set(neighbors), count - known_mines_count)
             self.knowledge.append(new_sentence)
         
         #4)mark any additional cells as safe or mines if possible
@@ -237,8 +241,8 @@ class MinesweeperAI():
                     if mine_cell not in self.mines:
                         self.mark_mine(mine_cell)
                         new_knowledge_gained = True
-            for sentence in self.knowledge:
-                print("knowledge:", sentence)
+            #for sentence in self.knowledge:
+                #print("knowledge:", sentence)
 
             
             # Infer new sentences
@@ -248,6 +252,7 @@ class MinesweeperAI():
                         inferred_sentence = Sentence(sentence2.cells - sentence1.cells, sentence2.count - sentence1.count)
                         if inferred_sentence not in self.knowledge:
                             self.knowledge.append(inferred_sentence)
+                            print(f"Inferred knowledge:", inferred_sentence)
                             new_knowledge_gained = True
 
 
@@ -265,6 +270,7 @@ class MinesweeperAI():
 
         if safe_moves:
             print("safe_moves available:", safe_moves)
+            print("known mines:", self.mines)
             choice = random.choice(list(safe_moves))
             print("MOVE (safe):", choice)
             return choice
