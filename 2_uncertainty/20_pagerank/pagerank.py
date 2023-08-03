@@ -117,7 +117,7 @@ def sample_pagerank(corpus, damping_factor, n):
         i += 1
 
     #normalize sampled_dict
-    normalized_sampled_dict = {k: round(v/n, 3) for k, v in sampled_dict.items()}
+    normalized_sampled_dict = {k: v/n for k, v in sampled_dict.items()}
 
     return normalized_sampled_dict
 
