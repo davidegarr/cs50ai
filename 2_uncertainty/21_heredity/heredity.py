@@ -139,7 +139,57 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    return 1
+    #add the number of genes we are checking to the dict
+    for person in people:
+        if person in one_gene:
+            people[person]["gene_number"] = 1
+        elif person in two_genes:
+            people[person]["gene_number"] = 2
+        else:
+            people[person]["gene_number"] = 0
+    
+    for person in people:
+        if people[person]["trait"] == None:
+            if person in have_trait:
+                people[person]["trait"] = True
+            else:
+                people[person]["trait"] = False
+
+    #create a chances_dict and fill it depending on having fathers in the people dict or not
+    chances_dict = {}
+    for person in people:
+        chances_dict[person] = 1
+        if people[person]["mother"] == None and people[person]["father"] == None:
+            chances_dict[person] *= PROBS["gene"][people[person]["gene_number"]] * PROBS["trait"][people[person]["gene_number"]][people[person]["trait"]]
+        else:
+            #assign variables
+            mother = people[person]["mother"]
+            father = people[person]["father"]
+            genes = people[person]["gene_number"]
+
+            gene_mother = people[mother]["gene_number"]
+            gene_father = people[father]["gene_number"]
+
+            # Probability for the child to get genes from mother
+            prob_mother = PROBS["mutation"] if gene_mother == 0 else (0.5 if gene_mother == 1 else (1 - PROBS["mutation"]))
+            
+            # Probability for the child to get genes from father
+            prob_father = PROBS["mutation"] if gene_father == 0 else (0.5 if gene_father == 1 else (1 - PROBS["mutation"]))
+            
+            # Compute the probability for child having 'genes' number of genes
+            if genes == 0:
+                prob_genes = (1 - prob_mother) * (1 - prob_father)
+            elif genes == 1:
+                prob_genes = prob_mother * (1 - prob_father) + (1 - prob_mother) * prob_father #from the mother but NOT the father or viceversa
+            else: # genes == 2
+                prob_genes = prob_mother * prob_father
+
+            chances_dict[person] *= prob_genes * PROBS["trait"][genes][people[person]["trait"]]
+    joint_prob = 1
+    for chance in chances_dict.values():
+        joint_prob *= chance      
+
+    return joint_prob
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
