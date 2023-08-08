@@ -102,7 +102,6 @@ class CrosswordCreator():
         
         for var in self.domains.copy():
             for word in self.domains[var].copy():
-                #print(word, len(word), x.length)
                 if len(word) != int(var.length):
                     self.domains[var].remove(word)
 
@@ -115,7 +114,20 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
+        revised = False
+        if self.crossword.overlaps[x, y] != None:
+            overlap_1, overlap_2 = self.crossword.overlaps[x, y]
+
+            to_remove = set()  # collect words to remove
+            for word_x in self.domains[x]:
+                # Check if there is no word_y such that word_x and word_y overlap
+                if not any(word_x[overlap_1] == word_y[overlap_2] for word_y in self.domains[y]):
+                    to_remove.add(word_x)
+
+            for word in to_remove:  # Remove words after iterating
+                self.domains[x].remove(word)
+                revised = True
+        return revised
 
     def ac3(self, arcs=None):
         """
