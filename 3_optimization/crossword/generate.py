@@ -171,7 +171,15 @@ class CrosswordCreator():
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
         """
-        raise NotImplementedError
+        print(f"in self.consistent(assignment [{assignment}])")
+        """
+        if not self.assignment_complete(assignment):
+            print("self.consistent is returning FALSE")
+            return False
+        """    
+        print("self.consistent is returning TRUE")
+        return True
+        
 
     def order_domain_values(self, var, assignment):
         """
@@ -180,7 +188,8 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        raise NotImplementedError
+        print("In def order_domain_values. Returning assignment: ", assignment)
+        return assignment
 
     def select_unassigned_variable(self, assignment):
         """
@@ -190,7 +199,9 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        for var in self.domains:
+            if var not in assignment:
+                return var
 
     def backtrack(self, assignment):
         """
@@ -201,7 +212,23 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        if self.assignment_complete(assignment):
+            print("assignment complete: ", assignment)
+            return assignment
+        print("assignment not complete. Current assignement in backtrack:", assignment)
+        var = self.select_unassigned_variable(assignment)
+        print("var = self.select_unassigned_variable(assignment) = ", var)
+        for word in self.domains[var]:
+            print(f"for word [{word}] in self.domains[var[{var}]] = {self.domains[var]}")
+            assignment[var] = word
+            print(f"assignment[var [{var}]:", assignment[var])
+            if self.consistent(assignment):
+                result = self.backtrack(assignment)
+                if result != None:
+                    return result
+                assignment.remove[var][word]
+        return None
+                    
 
 
 def main():
