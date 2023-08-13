@@ -196,7 +196,8 @@ class CrosswordCreator():
         """
         list_of_values = []
         for value in self.domains[var]:
-            list_of_values.append(value)
+            if value not in assignment:
+                list_of_values.append(value)
         return list_of_values
 
     def select_unassigned_variable(self, assignment):
@@ -207,11 +208,21 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        print(f"assignment before selecting variable:", assignment)
+        unassigned_variable = "None"
+        unassigned_variable_length = 1000000
+        num_neighbors = 0
         for var in self.domains:
             if var not in assignment:
-                print(f"returning var: {var}")
-                return var
+                if len(self.domains[var]) < unassigned_variable_length:
+                    unassigned_variable = var
+                    unassigned_variable_length = len(self.domains[var])
+                    num_neighbors = len(self.crossword.neighbors(var))
+                elif len(self.domains[var]) == unassigned_variable_length and len(self.crossword.neighbors(var)) > num_neighbors:
+                    unassigned_variable = var
+                    unassigned_variable_length = len(self.domains[var])
+                    num_neighbors = len(self.crossword.neighbors(var))
+
+        return unassigned_variable
 
     def backtrack(self, assignment):
         """
@@ -223,7 +234,7 @@ class CrosswordCreator():
         If no assignment is possible, return None.
         """
         if self.assignment_complete(assignment):
-            print("assignment complete: ", assignment)
+            #print("assignment complete: ", assignment)
             return assignment
         #print("assignment not complete. Current assignement in backtrack:", assignment)
         var = self.select_unassigned_variable(assignment)
@@ -235,7 +246,7 @@ class CrosswordCreator():
                 if result:
                     return result
             del assignment[var]
-        print(f"final assignment before failure: {assignment}")
+        #print(f"final assignment before failure: {assignment}")
         return None
                     
 
