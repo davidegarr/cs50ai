@@ -194,11 +194,34 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        list_of_values = []
+        #get all the neighbors not assigned
+        unassigned_neighbors = [v for v in self.crossword.neighbors(var) if v not in assignment]
+
+        #maps var to number of values ruled out
+        impact = {}
+
+        #Create a temporary assignment, setting `var` to the potential value, 
+        #and then iteratively evaluating how this choice affects the possible 
+        #assignments to its unassigned neighbors. The `count` variable tracks the 
+        #number of times the chosen value for `var` leads to inconsistent assignments 
+        #for the neighbors.
         for value in self.domains[var]:
-            if value not in assignment:
-                list_of_values.append(value)
-        return list_of_values
+            count = 0
+            temp_assignment = assignment.copy()
+            temp_assignment[var] = value
+            for neighbor in unassigned_neighbors:
+                for neighbor_val in self.domains[neighbor]:
+                    temp_assignment[neighbor] = neighbor_val
+                    if not self.consistent(temp_assignment):
+                        count += 1
+            impact[value] = count
+
+        #orders value in asc order of impact      
+        ordered_values = sorted(self.domains[var], key=lambda x: impacts[x])
+
+        return ordered_values
+
+
 
     def select_unassigned_variable(self, assignment):
         """
@@ -208,8 +231,8 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        unassigned_variable = "None"
-        unassigned_variable_length = 1000000
+        unassigned_variable = None
+        unassigned_variable_length = float('inf')
         num_neighbors = 0
         for var in self.domains:
             if var not in assignment:
