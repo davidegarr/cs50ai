@@ -167,19 +167,25 @@ class CrosswordCreator():
 
 
     def consistent(self, assignment):
-        """
-        Return True if `assignment` is consistent (i.e., words fit in crossword
-        puzzle without conflicting characters); return False otherwise.
-        """
-        print(f"in self.consistent(assignment [{assignment}])")
-        """
-        if not self.assignment_complete(assignment):
-            print("self.consistent is returning FALSE")
+        # Check for duplicate assignments
+        if len(assignment) != len(set(assignment.values())):
             return False
-        """    
-        print("self.consistent is returning TRUE")
+
+        # Check for conflicts between neighboring values
+        checked_pairs = set()
+        for var in assignment:
+            for neighbor in self.crossword.neighbors(var):
+                pair = frozenset((var, neighbor))
+                if pair in checked_pairs or neighbor not in assignment:
+                    continue
+                overlap = self.crossword.overlaps.get((var, neighbor))
+                if overlap and assignment[var][overlap[0]] != assignment[neighbor][overlap[1]]:
+                    return False
+                checked_pairs.add(pair)
+
         return True
-        
+
+
 
     def order_domain_values(self, var, assignment):
         """
@@ -188,8 +194,10 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        print("In def order_domain_values. Returning assignment: ", assignment)
-        return assignment
+        list_of_values = []
+        for value in self.domains[var]:
+            list_of_values.append(value)
+        return list_of_values
 
     def select_unassigned_variable(self, assignment):
         """
@@ -199,8 +207,10 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
+        print(f"assignment before selecting variable:", assignment)
         for var in self.domains:
             if var not in assignment:
+                print(f"returning var: {var}")
                 return var
 
     def backtrack(self, assignment):
@@ -215,18 +225,17 @@ class CrosswordCreator():
         if self.assignment_complete(assignment):
             print("assignment complete: ", assignment)
             return assignment
-        print("assignment not complete. Current assignement in backtrack:", assignment)
+        #print("assignment not complete. Current assignement in backtrack:", assignment)
         var = self.select_unassigned_variable(assignment)
-        print("var = self.select_unassigned_variable(assignment) = ", var)
+        #print("var = self.select_unassigned_variable(assignment) = ", var)
         for word in self.domains[var]:
-            print(f"for word [{word}] in self.domains[var[{var}]] = {self.domains[var]}")
             assignment[var] = word
-            print(f"assignment[var [{var}]:", assignment[var])
             if self.consistent(assignment):
                 result = self.backtrack(assignment)
-                if result != None:
+                if result:
                     return result
-                assignment.remove[var][word]
+            del assignment[var]
+        print(f"final assignment before failure: {assignment}")
         return None
                     
 
