@@ -59,7 +59,42 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    with open("shopping.csv", "r") as file:
+        reader = csv.reader(file)
+        header = next(reader)
+
+        #cleaning data parameters
+        int_columns = [0, 2, 4, 11, 12, 13, 14]  # Indices of columns that should be converted to integers
+        float_columns = [1, 3, 5, 6, 7, 8, 9]  # Indices of columns that should be converted to floats
+
+        month_mapping = {"Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3, "May": 4, "June": 5, "Jul": 6, "Aug": 7, "Sep": 8, "Oct": 9, "Nov": 10, "Dec": 11}
+
+        evidence = []
+        label = []
+        for row in reader:
+            # Convert the integer columns
+            for col_index in int_columns:
+                row[col_index] = int(row[col_index])
+                # Convert the float columns
+            for col_index in float_columns:
+                row[col_index] = float(row[col_index])
+            
+            month_index = 10
+            row[month_index] = month_mapping[row[month_index]]
+
+            visitor_type_index = 15
+            row[visitor_type_index] = 1 if row[visitor_type_index] == "Returning_Visitor" else 0
+
+            weekend_index = 16
+            row[weekend_index] = 1 if row[weekend_index] == "TRUE" else 0
+
+            revenue = row.pop() #removes and returns the last element on the list, in this case revenue
+            revenue = 1 if revenue == "TRUE" else 0 #converts to int
+            label.append(revenue)
+
+            evidence.append(row)
+    
+    print(evidence, label)
 
 
 def train_model(evidence, labels):
