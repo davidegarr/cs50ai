@@ -1,0 +1,9 @@
+# Problem Set 41: Nim
+ The project involves creating an AI for the [Nim game](https://en.wikipedia.org/wiki/Nim) that learns optimal strategies using reinforcement learning, specifically through the Q-learning algorithm. It updates Q-values based on the rewards it gets from different actions in various states, and it decides its actions using the epsilon-greedy strategy. The AI is trained through self-play, allowing it to refine its strategies and improve over time.
+
+ Four functions were implemented:
+
+ 1. "get_q_value": This acts as a knowledge retriever. The function fetches the perceived quality (Q-value) of performing a particular action within a certan game state. It's based on a foundational reinforcement learning concept where actions have associated values that dictate how "good" or "bad" they are. If the game hasn't encountered the specific action-state combination, it assumes a neutral value.
+ 2. "update_q_value": This function acts as a knowledge updater. Using the Q-learning formula, this function recalibrates the stored Q-value based on new experiences.
+ 3. "best_future_reward": This acts as a future reward estimator. The function estimates potential future game states, estimating the best reward the game agent might receive based on its current knowledge. One can imagine it as a chess player thinking a few moves ahead and judging which move will likely lead to the most advantageous position.
+ 4. "choose_action": This function acts as a decision maker. When faced with possible actions, this functions decides which one to take. It can operate in two modes: purely strategic (best move) or exploratory (random move). This ensures that the agent doesn't get stuck in a strategy, and remains open to discover better combinations.
